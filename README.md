@@ -11,7 +11,7 @@ A simple browser-based calculator for computing a final grade based on a weighte
 
 ## Usage
 
-Open `karakterkalkulator.html` directly in a browser – no installation or server required.
+Open `index.html` directly in a browser – no installation or server required.
 
 1. Adjust the weights using the sliders at the top (exam % and portfolio %)
 2. Set grades for the written exam and portfolio
