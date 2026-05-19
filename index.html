@@ -13,15 +13,31 @@
     padding: 2rem 1.5rem;
   }
   h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
-  .sub { font-size: 13px; color: #888; margin-bottom: 1.75rem; }
+  .sub { font-size: 17px; color: #888; margin-bottom: 1.75rem; }
 
   .weights-section { margin-bottom: 1.5rem; }
   .weights-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 8px; }
   .weight-block { flex: 1; }
-  .weight-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .weight-label { font-size: 15px; color: #888; margin-bottom: 6px; }
   .weight-input-row { display: flex; align-items: center; gap: 8px; }
   .weight-input-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
-  .weight-val { font-size: 15px; font-weight: 500; min-width: 38px; color: #e8e8e8; }
+
+  .weight-num {
+    width: 58px;
+    background: #2a2a2a;
+    border: 0.5px solid #444;
+    border-radius: 8px;
+    color: #e8e8e8;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 4px 8px;
+    text-align: center;
+    -moz-appearance: textfield;
+  }
+  .weight-num::-webkit-inner-spin-button,
+  .weight-num::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .weight-num:focus { outline: none; border-color: #7c6ef7; }
+  .weight-pct { font-size: 15px; color: #888; margin-left: 3px; }
 
 
   .sliders { display: grid; gap: 12px; margin-bottom: 1.5rem; }
@@ -29,6 +45,22 @@
   .slider-label { font-size: 14px; color: #aaa; width: 150px; flex-shrink: 0; }
   .slider-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
   .slider-val { font-size: 14px; font-weight: 500; min-width: 48px; text-align: right; color: #e8e8e8; }
+  .grade-num {
+    width: 48px;
+    background: #2a2a2a;
+    border: 0.5px solid #444;
+    border-radius: 8px;
+    color: #e8e8e8;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 8px;
+    text-align: center;
+    -moz-appearance: textfield;
+  }
+  .grade-num::-webkit-inner-spin-button,
+  .grade-num::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .grade-num:focus { outline: none; border-color: #7c6ef7; }
+  .grade-letter { font-size: 14px; color: #888; margin-left: 3px; }
 
   .result-box {
     background: #262626;
@@ -88,15 +120,15 @@
     <div class="weight-block">
       <label class="weight-label" for="examPct">Exam (%)</label>
       <div class="weight-input-row">
-        <input type="range" min="0" max="100" step="5" value="60" id="examPct" oninput="onExamPct()">
-        <span class="weight-val" id="examPct-out">60%</span>
+        <input type="range" min="0" max="100" step="5" value="70" id="examPct" oninput="onExamPct()">
+        <input type="number" class="weight-num" min="0" max="100" value="60" id="examPct-num" aria-label="Exam weight percentage" oninput="onExamPctNum()"><span class="weight-pct">%</span>
       </div>
     </div>
     <div class="weight-block">
       <label class="weight-label" for="mapPct">Portfolio (%)</label>
       <div class="weight-input-row">
         <input type="range" min="0" max="100" step="5" value="40" id="mapPct" oninput="onMapPct()">
-        <span class="weight-val" id="mapPct-out">40%</span>
+        <input type="number" class="weight-num" min="0" max="100" value="40" id="mapPct-num" aria-label="Portfolio weight percentage" oninput="onMapPctNum()"><span class="weight-pct">%</span>
       </div>
     </div>
   </div>
@@ -105,13 +137,15 @@
 <div class="sliders">
   <div class="slider-row">
     <label class="slider-label" for="exam">Written exam</label>
-    <input type="range" min="1" max="6" step="1" value="4" id="exam" oninput="update()">
-    <span class="slider-val" id="exam-out">4 (C)</span>
+    <input type="range" min="1" max="6" step="1" value="4" id="exam" oninput="onExamSlider()">
+    <input type="number" class="grade-num" min="1" max="6" value="4" id="exam-num" aria-label="Written exam grade" oninput="onExamNum()">
+    <span class="grade-letter" id="exam-letter">(C)</span>
   </div>
   <div class="slider-row">
     <label class="slider-label" for="folder">Portfolio</label>
-    <input type="range" min="1" max="6" step="1" value="4" id="folder" oninput="update()">
-    <span class="slider-val" id="folder-out">4 (C)</span>
+    <input type="range" min="1" max="6" step="1" value="4" id="folder" oninput="onFolderSlider()">
+    <input type="number" class="grade-num" min="1" max="6" value="4" id="folder-num" aria-label="Portfolio grade" oninput="onFolderNum()">
+    <span class="grade-letter" id="folder-letter">(C)</span>
   </div>
 </div>
 
@@ -141,33 +175,48 @@ const gradeColors = {A:'g-col-A',B:'g-col-B',C:'g-col-C',D:'g-col-D',E:'g-col-E'
 
 let examW = 0.6, mapW = 0.4;
 
-function onExamPct() {
-  const val = parseInt(document.getElementById('examPct').value);
-  document.getElementById('mapPct').value = 100 - val;
-  document.getElementById('examPct-out').textContent = val + '%';
-  document.getElementById('mapPct-out').textContent = (100 - val) + '%';
-  examW = val / 100;
-  mapW = (100 - val) / 100;
+function setWeights(examVal) {
+  examVal = Math.min(100, Math.max(0, examVal));
+  const mapVal = 100 - examVal;
+  document.getElementById('examPct').value = examVal;
+  document.getElementById('examPct-num').value = examVal;
+  document.getElementById('mapPct').value = mapVal;
+  document.getElementById('mapPct-num').value = mapVal;
+  examW = examVal / 100;
+  mapW = mapVal / 100;
   update();
 }
 
-function onMapPct() {
-  const val = parseInt(document.getElementById('mapPct').value);
-  document.getElementById('examPct').value = 100 - val;
-  document.getElementById('examPct-out').textContent = (100 - val) + '%';
-  document.getElementById('mapPct-out').textContent = val + '%';
-  mapW = val / 100;
-  examW = (100 - val) / 100;
-  update();
+function onExamPct() { setWeights(parseInt(document.getElementById('examPct').value)); }
+function onMapPct()  { setWeights(100 - parseInt(document.getElementById('mapPct').value)); }
+function onExamPctNum() {
+  const v = parseInt(document.getElementById('examPct-num').value);
+  if (!isNaN(v)) setWeights(v);
+}
+function onMapPctNum() {
+  const v = parseInt(document.getElementById('mapPct-num').value);
+  if (!isNaN(v)) setWeights(100 - v);
 }
 
 function calc(e, m) { return Math.min(6, Math.max(1, Math.round(e * examW + m * mapW))); }
 
+function setGrade(id, val) {
+  val = Math.min(6, Math.max(1, val));
+  document.getElementById(id).value = val;
+  document.getElementById(id + '-num').value = val;
+  document.getElementById(id + '-letter').textContent = '(' + letters[val] + ')';
+}
+
+function onExamSlider() { setGrade('exam', parseInt(document.getElementById('exam').value)); update(); }
+function onFolderSlider() { setGrade('folder', parseInt(document.getElementById('folder').value)); update(); }
+function onExamNum() { const v = parseInt(document.getElementById('exam-num').value); if (!isNaN(v)) { setGrade('exam', v); update(); } }
+function onFolderNum() { const v = parseInt(document.getElementById('folder-num').value); if (!isNaN(v)) { setGrade('folder', v); update(); } }
+
 function update() {
   const e = parseInt(document.getElementById('exam').value);
   const m = parseInt(document.getElementById('folder').value);
-  document.getElementById('exam-out').textContent = e + ' (' + letters[e] + ')';
-  document.getElementById('folder-out').textContent = m + ' (' + letters[m] + ')';
+  document.getElementById('exam-letter').textContent = '(' + letters[e] + ')';
+  document.getElementById('folder-letter').textContent = '(' + letters[m] + ')';
   const score = (e * examW + m * mapW).toFixed(2);
   const final = calc(e, m);
   const gl = letters[final];
