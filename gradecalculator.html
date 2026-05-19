@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Grade Calculator </title>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a1a;
+    color: #e8e8e8;
+    font-family: system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+  }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
+  .sub { font-size: 13px; color: #888; margin-bottom: 1.75rem; }
+
+  .weights-section { margin-bottom: 1.5rem; }
+  .weights-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 8px; }
+  .weight-block { flex: 1; }
+  .weight-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .weight-input-row { display: flex; align-items: center; gap: 8px; }
+  .weight-input-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
+  .weight-val { font-size: 15px; font-weight: 500; min-width: 38px; color: #e8e8e8; }
+
+
+  .sliders { display: grid; gap: 12px; margin-bottom: 1.5rem; }
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  .slider-label { font-size: 14px; color: #aaa; width: 150px; flex-shrink: 0; }
+  .slider-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
+  .slider-val { font-size: 14px; font-weight: 500; min-width: 48px; text-align: right; color: #e8e8e8; }
+
+  .result-box {
+    background: #262626;
+    border: 0.5px solid #333;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .result-grade { font-size: 52px; font-weight: 500; min-width: 60px; }
+  .result-info { flex: 1; }
+  .result-score { font-size: 13px; color: #888; }
+  .result-desc { font-size: 15px; color: #e8e8e8; margin-top: 3px; }
+
+  .g-col-A { color: #7ed96a; }
+  .g-col-B { color: #5dbfb0; }
+  .g-col-C { color: #7c9ef7; }
+  .g-col-D { color: #e2b84a; }
+  .g-col-E { color: #e2813a; }
+  .g-col-F { color: #e2504a; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { font-size: 11px; font-weight: 500; color: #666; text-align: center; padding: 8px 4px; border-bottom: 0.5px solid #2e2e2e; }
+  th:first-child { text-align: left; }
+  td { padding: 7px 4px; text-align: center; border-bottom: 0.5px solid #222; }
+  td:first-child { text-align: left; color: #888; font-size: 12px; }
+  .badge {
+    display: inline-block;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .b-A { background: #1e3a18; color: #7ed96a; }
+  .b-B { background: #0e332f; color: #5dbfb0; }
+  .b-C { background: #152040; color: #7c9ef7; }
+  .b-D { background: #3a2c0e; color: #e2b84a; }
+  .b-E { background: #3a1e0e; color: #e2813a; }
+  .b-F { background: #3a1010; color: #e2504a; }
+  .active-cell { background: #2a2440; border-radius: 6px; }
+
+  input[type=range] {
+    height: 4px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<h1>Grade Calculator</h1>
+<p class="sub">Set weights and grades to see the final result</p>
+
+<div class="weights-section">
+  <div class="weights-row">
+    <div class="weight-block">
+      <label class="weight-label" for="examPct">Exam (%)</label>
+      <div class="weight-input-row">
+        <input type="range" min="0" max="100" step="5" value="60" id="examPct" oninput="onExamPct()">
+        <span class="weight-val" id="examPct-out">60%</span>
+      </div>
+    </div>
+    <div class="weight-block">
+      <label class="weight-label" for="mapPct">Portfolio (%)</label>
+      <div class="weight-input-row">
+        <input type="range" min="0" max="100" step="5" value="40" id="mapPct" oninput="onMapPct()">
+        <span class="weight-val" id="mapPct-out">40%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sliders">
+  <div class="slider-row">
+    <label class="slider-label" for="exam">Written exam</label>
+    <input type="range" min="1" max="6" step="1" value="4" id="exam" oninput="update()">
+    <span class="slider-val" id="exam-out">4 (C)</span>
+  </div>
+  <div class="slider-row">
+    <label class="slider-label" for="folder">Portfolio</label>
+    <input type="range" min="1" max="6" step="1" value="4" id="folder" oninput="update()">
+    <span class="slider-val" id="folder-out">4 (C)</span>
+  </div>
+</div>
+
+<div class="result-box">
+  <div class="result-grade g-col-C" id="result-grade">C</div>
+  <div class="result-info">
+    <div class="result-score" id="result-score">Weighted score: 4.0 · exam 60% · portfolio 40%</div>
+    <div class="result-desc" id="result-desc">Good performance</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Portfolio ↓ / Exam →</th>
+      <th>A (6)</th><th>B (5)</th><th>C (4)</th><th>D (3)</th><th>E (2)</th><th>F (1)</th>
+    </tr>
+  </thead>
+  <tbody id="table-body"></tbody>
+</table>
+
+<script>
+const grades = [6,5,4,3,2,1];
+const letters = {6:'A',5:'B',4:'C',3:'D',2:'E',1:'F'};
+const desc = {6:'Excellent performance',5:'Very good performance',4:'Good performance',3:'Satisfactory performance',2:'Sufficient performance',1:'Fail'};
+const gradeColors = {A:'g-col-A',B:'g-col-B',C:'g-col-C',D:'g-col-D',E:'g-col-E',F:'g-col-F'};
+
+let examW = 0.6, mapW = 0.4;
+
+function onExamPct() {
+  const val = parseInt(document.getElementById('examPct').value);
+  document.getElementById('mapPct').value = 100 - val;
+  document.getElementById('examPct-out').textContent = val + '%';
+  document.getElementById('mapPct-out').textContent = (100 - val) + '%';
+  examW = val / 100;
+  mapW = (100 - val) / 100;
+  update();
+}
+
+function onMapPct() {
+  const val = parseInt(document.getElementById('mapPct').value);
+  document.getElementById('examPct').value = 100 - val;
+  document.getElementById('examPct-out').textContent = (100 - val) + '%';
+  document.getElementById('mapPct-out').textContent = val + '%';
+  mapW = val / 100;
+  examW = (100 - val) / 100;
+  update();
+}
+
+function calc(e, m) { return Math.min(6, Math.max(1, Math.round(e * examW + m * mapW))); }
+
+function update() {
+  const e = parseInt(document.getElementById('exam').value);
+  const m = parseInt(document.getElementById('folder').value);
+  document.getElementById('exam-out').textContent = e + ' (' + letters[e] + ')';
+  document.getElementById('folder-out').textContent = m + ' (' + letters[m] + ')';
+  const score = (e * examW + m * mapW).toFixed(2);
+  const final = calc(e, m);
+  const gl = letters[final];
+  const gradeEl = document.getElementById('result-grade');
+  gradeEl.textContent = gl;
+  gradeEl.className = 'result-grade ' + gradeColors[gl];
+  document.getElementById('result-score').textContent =
+    'Weighted score: ' + score + ' · exam ' + Math.round(examW*100) + '% · portfolio ' + Math.round(mapW*100) + '%';
+  document.getElementById('result-desc').textContent = desc[final];
+  buildTable(e, m);
+}
+
+function buildTable(selE, selM) {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  grades.forEach(m => {
+    const tr = document.createElement('tr');
+    let html = '<td>Portfolio ' + letters[m] + ' (' + m + ')</td>';
+    grades.forEach(e => {
+      const g = calc(e, m);
+      const gl = letters[g];
+      const active = e === selE && m === selM;
+      html += '<td><span class="badge b-' + gl + (active ? ' active-cell' : '') + '">' + gl + '</span></td>';
+    });
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+}
+
+update();
+</script>
+</body>
+</html>
