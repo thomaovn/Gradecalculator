@@ -17,12 +17,42 @@
   h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
   .sub { font-size: 17px; color: #888; margin-bottom: 1.75rem; }
 
-  .weights-section { margin-bottom: 1.5rem; }
-  .weights-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 8px; }
-  .weight-block { flex: 1; }
-  .weight-label { font-size: 15px; color: #888; margin-bottom: 6px; }
-  .weight-input-row { display: flex; align-items: center; gap: 8px; }
-  .weight-input-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
+  .component-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .comp-name-input {
+    background: #2a2a2a;
+    border: 0.5px solid #444;
+    border-radius: 8px;
+    color: #e8e8e8;
+    font-size: 13px;
+    padding: 4px 10px;
+    width: 130px;
+    flex-shrink: 0;
+  }
+  .comp-name-input:focus { outline: none; border-color: #7c6ef7; }
+  .comp-name-input::placeholder { color: #555; }
+  .remove-comp-btn {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 2px;
+    flex-shrink: 0;
+  }
+  .remove-comp-btn:hover { color: #e2504a; }
+  .add-comp-btn {
+    background: none;
+    border: 0.5px solid #444;
+    border-radius: 8px;
+    color: #888;
+    font-size: 13px;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+  .add-comp-btn:hover { border-color: #7c6ef7; color: #7c6ef7; }
+  .weight-total { font-size: 12px; }
+  .weight-total.ok { color: #7ed96a; }
+  .weight-total.warn { color: #e2813a; }
 
   .weight-num {
     width: 58px;
@@ -42,10 +72,7 @@
   .weight-pct { font-size: 15px; color: #888; margin-left: 3px; }
 
 
-  .sliders { display: grid; gap: 12px; margin-bottom: 1.5rem; }
-  .slider-row { display: flex; align-items: center; gap: 12px; }
-  .slider-label { font-size: 14px; color: #aaa; width: 150px; flex-shrink: 0; }
-  .slider-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
+  .components-section { margin-bottom: 0.5rem; }
   .grade-num {
     width: 48px;
     background: #2a2a2a;
@@ -298,38 +325,10 @@
 <p class="sub">Set weights and grades to see the final result</p>
 <input type="text" class="course-input" id="course-name" placeholder="Course name (optional)" maxlength="60" aria-label="Course name">
 
-<div class="weights-section">
-  <div class="weights-row">
-    <div class="weight-block">
-      <label class="weight-label" for="examPct">Exam (%)</label>
-      <div class="weight-input-row">
-        <input type="range" min="0" max="100" step="5" value="50" id="examPct" oninput="onExamPct()">
-        <input type="number" class="weight-num" min="0" max="100" value="50" id="examPct-num" aria-label="Exam weight percentage" oninput="onExamPctNum()"><span class="weight-pct">%</span>
-      </div>
-    </div>
-    <div class="weight-block">
-      <label class="weight-label" for="mapPct">Portfolio (%)</label>
-      <div class="weight-input-row">
-        <input type="range" min="0" max="100" step="5" value="50" id="mapPct" oninput="onMapPct()">
-        <input type="number" class="weight-num" min="0" max="100" value="50" id="mapPct-num" aria-label="Portfolio weight percentage" oninput="onMapPctNum()"><span class="weight-pct">%</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="sliders">
-  <div class="slider-row">
-    <label class="slider-label" for="exam">Written exam</label>
-    <input type="range" min="1" max="6" step="1" value="4" id="exam" oninput="onExamSlider()">
-    <input type="number" class="grade-num" min="1" max="6" value="4" id="exam-num" aria-label="Written exam grade" oninput="onExamNum()">
-    <span class="grade-letter" id="exam-letter">(C)</span>
-  </div>
-  <div class="slider-row">
-    <label class="slider-label" for="folder">Portfolio</label>
-    <input type="range" min="1" max="6" step="1" value="4" id="folder" oninput="onFolderSlider()">
-    <input type="number" class="grade-num" min="1" max="6" value="4" id="folder-num" aria-label="Portfolio grade" oninput="onFolderNum()">
-    <span class="grade-letter" id="folder-letter">(C)</span>
-  </div>
+<div class="components-section" id="components-section"></div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem">
+  <button class="add-comp-btn" onclick="addComponent()">+ Add component</button>
+  <span class="weight-total" id="weight-total"></span>
 </div>
 
 <div class="result-box">
@@ -382,73 +381,188 @@ const letters = {6:'A',5:'B',4:'C',3:'D',2:'E',1:'F'};
 const desc = {6:'Excellent performance',5:'Very good performance',4:'Good performance',3:'Satisfactory performance',2:'Sufficient performance',1:'Fail'};
 const gradeColors = {A:'g-col-A',B:'g-col-B',C:'g-col-C',D:'g-col-D',E:'g-col-E',F:'g-col-F'};
 
-let examW = 0.5, mapW = 0.5;
+let components = [
+  { name: 'Written exam', grade: 4, weight: 50 },
+  { name: 'Portfolio',    grade: 4, weight: 50 }
+];
 
-function setWeights(examVal) {
-  examVal = Math.min(100, Math.max(0, examVal));
-  const mapVal = 100 - examVal;
-  document.getElementById('examPct').value = examVal;
-  document.getElementById('examPct-num').value = examVal;
-  document.getElementById('mapPct').value = mapVal;
-  document.getElementById('mapPct-num').value = mapVal;
-  examW = examVal / 100;
-  mapW = mapVal / 100;
+function calcScore() {
+  const totalW = components.reduce((s, c) => s + c.weight, 0);
+  if (totalW === 0) return 1;
+  return components.reduce((s, c) => s + c.grade * c.weight, 0) / totalW;
+}
+
+function calcFinal() {
+  return Math.min(6, Math.max(1, Math.round(calcScore())));
+}
+
+function renderComponents() {
+  const section = document.getElementById('components-section');
+  section.innerHTML = components.map((c, i) =>
+    `<div class="component-row">
+      <input type="text" class="comp-name-input" value="${escapeHtml(c.name)}" maxlength="40" placeholder="Component name" aria-label="Component name" oninput="components[${i}].name=this.value.slice(0,40);update()">
+      <input type="range" min="1" max="6" step="1" value="${c.grade}" id="comp-slider-${i}" oninput="onCompSlider(${i},this.value)" style="flex:1;accent-color:#7c6ef7">
+      <input type="number" class="grade-num" min="1" max="6" value="${c.grade}" id="comp-num-${i}" aria-label="${escapeHtml(c.name)} grade" oninput="onCompNum(${i},this.value)">
+      <span class="grade-letter" id="comp-letter-${i}">(${letters[c.grade]})</span>
+      <input type="range" min="0" max="100" step="1" value="${c.weight}" id="comp-weight-slider-${i}" oninput="onCompWeight(${i},this.value)" style="flex:1;accent-color:#7c6ef7">
+      <input type="number" class="weight-num" min="0" max="100" value="${c.weight}" id="comp-weight-${i}" aria-label="${escapeHtml(c.name)} weight" oninput="onCompWeight(${i},this.value)">
+      <span class="weight-pct">%</span>
+      ${components.length > 1
+        ? `<button class="remove-comp-btn" onclick="removeComponent(${i})" title="Remove">&times;</button>`
+        : '<span style="width:18px"></span>'}
+    </div>`
+  ).join('');
+  section.querySelectorAll('.grade-num').forEach(el => {
+    el.addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g, '');
+      if (this.value.length > 1) this.value = this.value.slice(0, 1);
+    });
+  });
+  section.querySelectorAll('.weight-num').forEach(el => {
+    el.addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g, '');
+      if (this.value.length > 3) this.value = this.value.slice(0, 3);
+    });
+  });
+}
+
+function onCompSlider(i, val) {
+  components[i].grade = Math.min(6, Math.max(1, parseInt(val)));
+  document.getElementById('comp-num-' + i).value = components[i].grade;
+  document.getElementById('comp-letter-' + i).textContent = '(' + letters[components[i].grade] + ')';
   update();
 }
 
-function onExamPct() { setWeights(parseInt(document.getElementById('examPct').value)); }
-function onMapPct()  { setWeights(100 - parseInt(document.getElementById('mapPct').value)); }
-function onExamPctNum() {
-  const v = parseInt(document.getElementById('examPct-num').value);
-  if (!isNaN(v)) setWeights(v);
-}
-function onMapPctNum() {
-  const v = parseInt(document.getElementById('mapPct-num').value);
-  if (!isNaN(v)) setWeights(100 - v);
+function onCompNum(i, val) {
+  const v = parseInt(val);
+  if (isNaN(v)) return;
+  components[i].grade = Math.min(6, Math.max(1, v));
+  document.getElementById('comp-slider-' + i).value = components[i].grade;
+  document.getElementById('comp-letter-' + i).textContent = '(' + letters[components[i].grade] + ')';
+  update();
 }
 
-function calc(e, m) { return Math.min(6, Math.max(1, Math.round(e * examW + m * mapW))); }
-
-function setGrade(id, val) {
-  val = Math.min(6, Math.max(1, val));
-  document.getElementById(id).value = val;
-  document.getElementById(id + '-num').value = val;
-  document.getElementById(id + '-letter').textContent = '(' + letters[val] + ')';
+function onCompWeight(i, val) {
+  components[i].weight = Math.min(100, Math.max(0, parseInt(val) || 0));
+  distributeRemaining(i);
+  // sync the input that triggered the change too (slider→num or num→slider)
+  const slider = document.getElementById('comp-weight-slider-' + i);
+  const num    = document.getElementById('comp-weight-' + i);
+  if (slider) slider.value = components[i].weight;
+  if (num)    num.value    = components[i].weight;
+  components.forEach((c, idx) => {
+    if (idx !== i) {
+      const s = document.getElementById('comp-weight-slider-' + idx);
+      const n = document.getElementById('comp-weight-' + idx);
+      if (s) s.value = c.weight;
+      if (n) n.value = c.weight;
+    }
+  });
+  updateWeightTotal();
+  update();
 }
 
-function onExamSlider() { setGrade('exam', parseInt(document.getElementById('exam').value)); update(); }
-function onFolderSlider() { setGrade('folder', parseInt(document.getElementById('folder').value)); update(); }
-function onExamNum() { const v = parseInt(document.getElementById('exam-num').value); if (!isNaN(v)) { setGrade('exam', v); update(); } }
-function onFolderNum() { const v = parseInt(document.getElementById('folder-num').value); if (!isNaN(v)) { setGrade('folder', v); update(); } }
+function distributeRemaining(changedIdx) {
+  const remaining = 100 - components[changedIdx].weight;
+  const others = components.map((c, idx) => ({ c, idx })).filter(({ idx }) => idx !== changedIdx);
+  if (others.length === 0) return;
+  const othersTotal = others.reduce((s, { c }) => s + c.weight, 0);
+  if (othersTotal === 0) {
+    const base = Math.floor(remaining / others.length);
+    const leftover = remaining - base * others.length;
+    others.forEach(({ c }, j) => { c.weight = base + (j === 0 ? leftover : 0); });
+  } else {
+    let assigned = 0;
+    others.forEach(({ c }, j) => {
+      if (j === others.length - 1) {
+        c.weight = Math.max(0, remaining - assigned);
+      } else {
+        c.weight = Math.round(c.weight / othersTotal * remaining);
+        assigned += c.weight;
+      }
+    });
+  }
+}
+
+function normalizeWeights() {
+  const total = components.reduce((s, c) => s + c.weight, 0);
+  if (total === 100 || components.length === 0) return;
+  if (total === 0) {
+    const base = Math.floor(100 / components.length);
+    const leftover = 100 - base * components.length;
+    components.forEach((c, j) => { c.weight = base + (j === 0 ? leftover : 0); });
+  } else {
+    let assigned = 0;
+    components.forEach((c, j) => {
+      if (j === components.length - 1) {
+        c.weight = Math.max(0, 100 - assigned);
+      } else {
+        c.weight = Math.round(c.weight / total * 100);
+        assigned += c.weight;
+      }
+    });
+  }
+}
+
+function updateWeightTotal() {
+  const total = components.reduce((s, c) => s + c.weight, 0);
+  const el = document.getElementById('weight-total');
+  el.textContent = 'Total: ' + total + '%';
+  el.className = 'weight-total ' + (total === 100 ? 'ok' : 'warn');
+}
+
+function addComponent() {
+  const share = Math.floor(100 / (components.length + 1));
+  components.push({ name: 'Component ' + (components.length + 1), grade: 4, weight: share });
+  distributeRemaining(components.length - 1);
+  renderComponents();
+  update();
+}
+
+function removeComponent(i) {
+  components.splice(i, 1);
+  normalizeWeights();
+  renderComponents();
+  update();
+}
 
 function update() {
-  const e = parseInt(document.getElementById('exam').value);
-  const m = parseInt(document.getElementById('folder').value);
-  if (isNaN(e) || isNaN(m)) return;
-  document.getElementById('exam-letter').textContent = '(' + letters[e] + ')';
-  document.getElementById('folder-letter').textContent = '(' + letters[m] + ')';
-  const score = (e * examW + m * mapW).toFixed(2);
-  const final = calc(e, m);
+  const score = calcScore();
+  const final = calcFinal();
   const gl = letters[final];
   const gradeEl = document.getElementById('result-grade');
   gradeEl.textContent = gl;
   gradeEl.className = 'result-grade ' + gradeColors[gl];
   document.getElementById('result-score').textContent =
-    'Weighted score: ' + score + ' · exam ' + Math.round(examW*100) + '% · portfolio ' + Math.round(mapW*100) + '%';
+    'Weighted score: ' + score.toFixed(2) + ' · ' + components.map(c => escapeHtml(c.name) + ' ' + c.weight + '%').join(' · ');
   document.getElementById('result-desc').textContent = desc[final];
-  buildTable(e, m);
+  const tableEl = document.querySelector('table');
+  if (components.length === 2) {
+    tableEl.style.display = '';
+    buildTable();
+  } else {
+    tableEl.style.display = 'none';
+  }
+  updateWeightTotal();
 }
 
-function buildTable(selE, selM) {
+function buildTable() {
+  const [c0, c1] = components;
+  const headerRow = document.querySelector('table thead tr');
+  headerRow.innerHTML = '<th>' + escapeHtml(c1.name) + ' ↓ / ' + escapeHtml(c0.name) + ' →</th>' +
+    grades.map(g => '<th>' + letters[g] + ' (' + g + ')</th>').join('');
+  const totalW = c0.weight + c1.weight;
+  const w0 = totalW > 0 ? c0.weight / totalW : 0.5;
+  const w1 = totalW > 0 ? c1.weight / totalW : 0.5;
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = '';
-  grades.forEach(m => {
+  grades.forEach(g1 => {
     const tr = document.createElement('tr');
-    let html = '<td>Portfolio ' + letters[m] + ' (' + m + ')</td>';
-    grades.forEach(e => {
-      const g = calc(e, m);
-      const gl = letters[g];
-      const active = e === selE && m === selM;
+    let html = '<td>' + escapeHtml(c1.name) + ' ' + letters[g1] + ' (' + g1 + ')</td>';
+    grades.forEach(g0 => {
+      const result = Math.min(6, Math.max(1, Math.round(g0 * w0 + g1 * w1)));
+      const gl = letters[result];
+      const active = g0 === c0.grade && g1 === c1.grade;
       html += '<td><span class="badge b-' + gl + (active ? ' active-cell' : '') + '">' + gl + '</span></td>';
     });
     tr.innerHTML = html;
@@ -463,17 +577,14 @@ function escapeHtml(str) {
 }
 
 function addToSummary() {
-  const e = parseInt(document.getElementById('exam').value);
-  const m = parseInt(document.getElementById('folder').value);
-  const score = parseFloat((e * examW + m * mapW).toFixed(2));
-  const final = calc(e, m);
+  const score = parseFloat(calcScore().toFixed(2));
+  const final = calcFinal();
   const rawName = document.getElementById('course-name').value.trim().slice(0, 60);
   savedGrades.push({
     letter: letters[final],
     value: final,
     score,
-    examPct: Math.round(examW * 100),
-    mapPct: Math.round(mapW * 100),
+    weightInfo: components.map(c => escapeHtml(c.name) + ' ' + c.weight + '%').join(' / '),
     name: rawName
   });
   renderSummary();
@@ -493,14 +604,10 @@ function editSummaryEntry(i) {
   const gradeOptions = [6,5,4,3,2,1].map(v =>
     `<option value="${v}"${g.value === v ? ' selected' : ''}>${letters[v]} (${v})</option>`
   ).join('');
-  const pctFields = !g.manual
-    ? `<input type="number" class="entry-edit-pct" id="edit-exam-${i}" value="${g.examPct}" min="0" max="100" aria-label="Exam percentage" oninput="this.value=Math.min(100,Math.max(0,parseInt(this.value)||0))"><span style="color:#888;font-size:12px">exam %</span>`
-    : '';
   entry.innerHTML = `
     <div class="entry-edit-form">
       <input type="text" id="edit-name-${i}" value="${escapeHtml(g.name || '')}" placeholder="Course name" maxlength="60" aria-label="Course name">
       <select class="entry-edit-select" id="edit-grade-${i}" aria-label="Grade">${gradeOptions}</select>
-      ${pctFields}
       <button class="entry-save-btn" onclick="saveEntryEdit(${i})">Save</button>
       <button class="entry-cancel-btn" onclick="renderSummary()">Cancel</button>
     </div>`;
@@ -516,11 +623,6 @@ function saveEntryEdit(i) {
   g.value = newValue;
   g.letter = letters[newValue];
   g.score = newValue;
-  if (!g.manual) {
-    const examPct = Math.min(100, Math.max(0, parseInt(document.getElementById('edit-exam-' + i).value) || 0));
-    g.examPct = examPct;
-    g.mapPct = 100 - examPct;
-  }
   renderSummary();
 }
 
@@ -538,7 +640,7 @@ function renderSummary() {
       <span class="drag-handle" title="Drag to reorder">⠿</span>
       <span class="summary-entry-grade ${gradeColors[g.letter]}">${g.letter}</span>
       <span class="summary-entry-detail">
-        ${g.name ? '<strong>' + escapeHtml(g.name) + '</strong> &middot; ' : ''}${'Score ' + g.letter + ' (' + g.score + ')' + (g.manual ? '' : ' &middot; exam ' + g.examPct + '% / portfolio ' + g.mapPct + '%')}
+        ${g.name ? '<strong>' + escapeHtml(g.name) + '</strong> &middot; ' : ''}${'Score ' + g.letter + ' (' + g.score + ')' + (g.manual || !g.weightInfo ? '' : ' &middot; ' + g.weightInfo)}
       </span>
       <button class="summary-edit" onclick="editSummaryEntry(${i})" title="Edit">✎</button>
       <button class="summary-remove" onclick="removeFromSummary(${i})" title="Remove">&times;</button>
@@ -589,19 +691,7 @@ function initDrag() {
   });
 }
 
-document.querySelectorAll('.grade-num').forEach(el => {
-  el.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
-    if (this.value.length > 1) this.value = this.value.slice(0, 1);
-  });
-});
-document.querySelectorAll('.weight-num').forEach(el => {
-  el.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
-    if (this.value.length > 3) this.value = this.value.slice(0, 3);
-  });
-});
-
+renderComponents();
 update();
 </script>
 </body>
