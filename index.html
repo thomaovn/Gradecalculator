@@ -246,6 +246,19 @@ function buildTable(selE, selM) {
   });
 }
 
+document.querySelectorAll('.grade-num').forEach(el => {
+  el.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    if (this.value.length > 1) this.value = this.value.slice(0, 1);
+  });
+});
+document.querySelectorAll('.weight-num').forEach(el => {
+  el.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    if (this.value.length > 3) this.value = this.value.slice(0, 3);
+  });
+});
+
 update();
 </script>
 </body>
