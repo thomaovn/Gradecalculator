@@ -146,6 +146,11 @@
     padding: 7px 12px;
     font-size: 13px;
   }
+  .summary-entry { cursor: default; transition: opacity 0.15s; }
+  .summary-entry.dragging { opacity: 0.4; }
+  .summary-entry.drag-over { border-color: #7c6ef7; }
+  .drag-handle { color: #444; cursor: grab; font-size: 14px; padding: 0 2px; user-select: none; }
+  .drag-handle:hover { color: #888; }
   .summary-entry-grade { font-weight: 600; min-width: 20px; }
   .summary-entry-detail { flex: 1; color: #888; }
   .summary-remove {
@@ -529,7 +534,8 @@ function renderSummary() {
   const list = document.getElementById('summary-list');
   section.style.display = '';
   list.innerHTML = savedGrades.map((g, i) =>
-    `<div class="summary-entry" id="summary-entry-${i}">
+    `<div class="summary-entry" id="summary-entry-${i}" draggable="true">
+      <span class="drag-handle" title="Drag to reorder">⠿</span>
       <span class="summary-entry-grade ${gradeColors[g.letter]}">${g.letter}</span>
       <span class="summary-entry-detail">
         ${g.name ? '<strong>' + escapeHtml(g.name) + '</strong> &middot; ' : ''}${'Score ' + g.letter + ' (' + g.score + ')' + (g.manual ? '' : ' &middot; exam ' + g.examPct + '% / portfolio ' + g.mapPct + '%')}
@@ -538,6 +544,7 @@ function renderSummary() {
       <button class="summary-remove" onclick="removeFromSummary(${i})" title="Remove">&times;</button>
     </div>`
   ).join('');
+  initDrag();
   if (savedGrades.length === 0) {
     document.getElementById('summary-avg-grade').textContent = '';
     document.getElementById('summary-avg-label').textContent = '';
@@ -552,6 +559,34 @@ function renderSummary() {
   avgGradeEl.className = 'summary-avg-grade ' + gradeColors[avgLetter];
   document.getElementById('summary-avg-label').textContent = 'Average: ' + avg.toFixed(2) + ' → ' + desc[avgFinal];
   document.getElementById('summary-avg-count').textContent = savedGrades.length + ' grade' + (savedGrades.length !== 1 ? 's' : '');
+}
+
+function initDrag() {
+  let dragIndex = null;
+  document.querySelectorAll('.summary-entry').forEach(el => {
+    el.addEventListener('dragstart', () => {
+      dragIndex = parseInt(el.id.split('-').pop());
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      document.querySelectorAll('.summary-entry').forEach(e => e.classList.remove('drag-over'));
+    });
+    el.addEventListener('dragover', e => {
+      e.preventDefault();
+      document.querySelectorAll('.summary-entry').forEach(e => e.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+    });
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      const dropIndex = parseInt(el.id.split('-').pop());
+      if (dragIndex !== null && dragIndex !== dropIndex) {
+        const moved = savedGrades.splice(dragIndex, 1)[0];
+        savedGrades.splice(dropIndex, 0, moved);
+        renderSummary();
+      }
+    });
+  });
 }
 
 document.querySelectorAll('.grade-num').forEach(el => {
