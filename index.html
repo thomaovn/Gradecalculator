@@ -109,11 +109,108 @@
     border-radius: 2px;
     cursor: pointer;
   }
+
+  .add-btn {
+    background: #7c6ef7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .add-btn:hover { background: #6a5de0; }
+
+  .summary-section {
+    margin-top: 1.5rem;
+  }
+  .summary-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .summary-empty { font-size: 13px; color: #555; }
+  .summary-list { display: grid; gap: 6px; margin-bottom: 10px; }
+  .summary-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #222;
+    border: 0.5px solid #2e2e2e;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+  .summary-entry-grade { font-weight: 600; min-width: 20px; }
+  .summary-entry-detail { flex: 1; color: #888; }
+  .summary-remove {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .summary-remove:hover { color: #e2504a; }
+  .summary-edit {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .summary-edit:hover { color: #7c6ef7; }
+  .summary-name-input {
+    background: #2a2a2a;
+    border: 0.5px solid #7c6ef7;
+    border-radius: 6px;
+    color: #e8e8e8;
+    font-size: 13px;
+    padding: 2px 8px;
+    width: 160px;
+  }
+  .summary-name-input:focus { outline: none; }
+  .summary-avg-box {
+    background: #262626;
+    border: 0.5px solid #333;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .summary-avg-grade { font-size: 28px; font-weight: 500; }
+  .summary-avg-label { color: #888; font-size: 13px; }
+
+  .course-input {
+    background: #2a2a2a;
+    border: 0.5px solid #444;
+    border-radius: 8px;
+    color: #e8e8e8;
+    font-size: 14px;
+    padding: 6px 12px;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 1.75rem;
+    display: block;
+  }
+  .course-input::placeholder { color: #555; }
+  .course-input:focus { outline: none; border-color: #7c6ef7; }
 </style>
 </head>
 <body>
 <h1>Grade Calculator</h1>
 <p class="sub">Set weights and grades to see the final result</p>
+<input type="text" class="course-input" id="course-name" placeholder="Course name (optional)" maxlength="60">
 
 <div class="weights-section">
   <div class="weights-row">
@@ -155,6 +252,7 @@
     <div class="result-score" id="result-score">Weighted score: 4.0 · exam 60% · portfolio 40%</div>
     <div class="result-desc" id="result-desc">Good performance</div>
   </div>
+  <button class="add-btn" onclick="addToSummary()">+ Add</button>
 </div>
 
 <table>
@@ -166,6 +264,18 @@
   </thead>
   <tbody id="table-body"></tbody>
 </table>
+
+<div class="summary-section" id="summary-section" style="display:none">
+  <div class="summary-title">Summary</div>
+  <div class="summary-list" id="summary-list"></div>
+  <div class="summary-avg-box">
+    <div class="summary-avg-grade" id="summary-avg-grade"></div>
+    <div>
+      <div class="summary-avg-label" id="summary-avg-label"></div>
+      <div style="font-size:12px;color:#555" id="summary-avg-count"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 const grades = [6,5,4,3,2,1];
@@ -244,6 +354,79 @@ function buildTable(selE, selM) {
     tr.innerHTML = html;
     tbody.appendChild(tr);
   });
+}
+
+const savedGrades = [];
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function addToSummary() {
+  const e = parseInt(document.getElementById('exam').value);
+  const m = parseInt(document.getElementById('folder').value);
+  const score = parseFloat((e * examW + m * mapW).toFixed(2));
+  const final = calc(e, m);
+  const rawName = document.getElementById('course-name').value.trim().slice(0, 60);
+  savedGrades.push({
+    letter: letters[final],
+    value: final,
+    score,
+    examPct: Math.round(examW * 100),
+    mapPct: Math.round(mapW * 100),
+    name: rawName
+  });
+  renderSummary();
+}
+
+function editSummaryName(i) {
+  const detail = document.getElementById('summary-detail-' + i);
+  const g = savedGrades[i];
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'summary-name-input';
+  input.maxLength = 60;
+  input.value = g.name || '';
+  input.placeholder = 'Course name';
+  function save() {
+    g.name = input.value.trim().slice(0, 60);
+    renderSummary();
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); if (e.key === 'Escape') { input.value = g.name || ''; input.blur(); } });
+  detail.innerHTML = '';
+  detail.appendChild(input);
+  input.focus();
+}
+
+function removeFromSummary(i) {
+  savedGrades.splice(i, 1);
+  renderSummary();
+}
+
+function renderSummary() {
+  const section = document.getElementById('summary-section');
+  const list = document.getElementById('summary-list');
+  if (savedGrades.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  list.innerHTML = savedGrades.map((g, i) =>
+    `<div class="summary-entry">
+      <span class="summary-entry-grade ${gradeColors[g.letter]}">${g.letter}</span>
+      <span class="summary-entry-detail" id="summary-detail-${i}">
+        ${g.name ? '<strong>' + escapeHtml(g.name) + '</strong> &middot; ' : ''}Score ${g.score} &middot; exam ${g.examPct}% / portfolio ${g.mapPct}%
+      </span>
+      <button class="summary-edit" onclick="editSummaryName(${i})" title="Edit name">✎</button>
+      <button class="summary-remove" onclick="removeFromSummary(${i})" title="Remove">&times;</button>
+    </div>`
+  ).join('');
+  const avg = savedGrades.reduce((s, g) => s + g.value, 0) / savedGrades.length;
+  const avgFinal = Math.min(6, Math.max(1, Math.round(avg)));
+  const avgLetter = letters[avgFinal];
+  const avgGradeEl = document.getElementById('summary-avg-grade');
+  avgGradeEl.textContent = avgLetter;
+  avgGradeEl.className = 'summary-avg-grade ' + gradeColors[avgLetter];
+  document.getElementById('summary-avg-label').textContent = 'Average: ' + avg.toFixed(2) + ' → ' + desc[avgFinal];
+  document.getElementById('summary-avg-count').textContent = savedGrades.length + ' grade' + (savedGrades.length !== 1 ? 's' : '');
 }
 
 document.querySelectorAll('.grade-num').forEach(el => {
