@@ -11,22 +11,95 @@
     font-family: system-ui, sans-serif;
     min-height: 100vh;
     padding: 2rem 1.5rem;
+    max-width: 860px;
+    margin: 0;
   }
   h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
   .sub { font-size: 17px; color: #888; margin-bottom: 1.75rem; }
 
-  .weights-section { margin-bottom: 1.5rem; }
-  .weights-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 8px; }
-  .weight-block { flex: 1; }
-  .weight-label { font-size: 15px; color: #888; margin-bottom: 6px; }
-  .weight-input-row { display: flex; align-items: center; gap: 8px; }
-  .weight-input-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
+  .component-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1d1d1d;
+    border: none;
+    border-radius: 16px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .component-row input[type=range] { flex: 1; min-width: 0; }
+  .component-row.locked-row { border-color: #7c6ef7; }
+  .comp-name-input {
+    background: transparent;
+    border: none;
+    border-bottom: 0.5px solid #444;
+    border-radius: 0;
+    color: #e8e8e8;
+    font-size: 13px;
+    padding: 2px 4px;
+    width: 120px;
+    flex-shrink: 0;
+  }
+  .comp-name-input:focus { outline: none; border-bottom-color: #7c6ef7; }
+  .comp-name-input::placeholder { color: #555; }
+  .lock-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0 2px;
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+  .lock-btn.active { opacity: 1; color: #7c6ef7; }
+  .lock-btn:hover { opacity: 1; }
+  .remove-comp-btn {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 2px;
+    flex-shrink: 0;
+  }
+  .remove-comp-btn:hover { color: #e2504a; }
+  .add-comp-btn {
+    background: #7c6ef7;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+  .add-comp-btn:hover { background: #6a5de0; }
+  .weight-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .weight-group .weight-num {
+    width: 42px;
+    text-align: center;
+  }
+  .weight-pct-box {
+    background: #202020;
+    border: 0.5px solid #383838;
+    border-radius: 12px;
+    color: #888;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 4px 8px;
+    line-height: 1.4;
+  }
 
   .weight-num {
     width: 58px;
-    background: #2a2a2a;
-    border: 0.5px solid #444;
-    border-radius: 8px;
+    background: #202020;
+    border: 0.5px solid #383838;
+    border-radius: 12px;
     color: #e8e8e8;
     font-size: 15px;
     font-weight: 500;
@@ -37,35 +110,25 @@
   .weight-num::-webkit-inner-spin-button,
   .weight-num::-webkit-outer-spin-button { -webkit-appearance: none; }
   .weight-num:focus { outline: none; border-color: #7c6ef7; }
-  .weight-pct { font-size: 15px; color: #888; margin-left: 3px; }
 
-
-  .sliders { display: grid; gap: 12px; margin-bottom: 1.5rem; }
-  .slider-row { display: flex; align-items: center; gap: 12px; }
-  .slider-label { font-size: 14px; color: #aaa; width: 150px; flex-shrink: 0; }
-  .slider-row input[type=range] { flex: 1; accent-color: #7c6ef7; }
-  .slider-val { font-size: 14px; font-weight: 500; min-width: 48px; text-align: right; color: #e8e8e8; }
-  .grade-num {
-    width: 48px;
-    background: #2a2a2a;
-    border: 0.5px solid #444;
-    border-radius: 8px;
+  .components-section { margin-bottom: 0.5rem; }
+  .grade-select {
+    background: #202020;
+    border: 0.5px solid #383838;
+    border-radius: 12px;
     color: #e8e8e8;
     font-size: 14px;
     font-weight: 500;
     padding: 4px 8px;
-    text-align: center;
-    -moz-appearance: textfield;
+    cursor: pointer;
+    flex-shrink: 0;
   }
-  .grade-num::-webkit-inner-spin-button,
-  .grade-num::-webkit-outer-spin-button { -webkit-appearance: none; }
-  .grade-num:focus { outline: none; border-color: #7c6ef7; }
-  .grade-letter { font-size: 14px; color: #888; margin-left: 3px; }
+  .grade-select:focus { outline: none; border-color: #7c6ef7; }
 
   .result-box {
-    background: #262626;
-    border: 0.5px solid #333;
-    border-radius: 14px;
+    background: #232323;
+    border: none;
+    border-radius: 20px;
     padding: 1.25rem 1.5rem;
     margin-bottom: 1.5rem;
     display: flex;
@@ -91,7 +154,7 @@
   td:first-child { text-align: left; color: #888; font-size: 12px; }
   .badge {
     display: inline-block;
-    border-radius: 6px;
+    border-radius: 16px;
     padding: 2px 10px;
     font-weight: 500;
     font-size: 12px;
@@ -102,51 +165,235 @@
   .b-D { background: #3a2c0e; color: #e2b84a; }
   .b-E { background: #3a1e0e; color: #e2813a; }
   .b-F { background: #3a1010; color: #e2504a; }
-  .active-cell { background: #2a2440; border-radius: 6px; }
+  .active-cell { background: #2a2440; border-radius: 16px; }
 
   input[type=range] {
     height: 4px;
     border-radius: 2px;
     cursor: pointer;
   }
+
+  .add-btn {
+    background: #7c6ef7;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .add-btn:hover { background: #6a5de0; }
+
+  .summary-section {
+    margin-top: 1.5rem;
+  }
+  .summary-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .summary-list { display: grid; gap: 6px; margin-bottom: 10px; }
+  .semester-section { margin-bottom: 6px; }
+  .semester-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #1d1d1d;
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .semester-header:hover { background: #202020; }
+  .active-semester .semester-header { background: #1e1b2e; }
+  .semester-header.drag-over { background: #242040 !important; outline: 1px solid #7c6ef7; border-radius: 12px; }
+  .semester-toggle { background: none; border: none; color: #555; cursor: pointer; font-size: 11px; padding: 0; flex-shrink: 0; }
+  .semester-name { font-size: 14px; font-weight: 500; color: #e8e8e8; }
+  .semester-name-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 0.5px solid #7c6ef7;
+    color: #e8e8e8;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0 2px;
+    outline: none;
+  }
+  .semester-avg-badge { font-size: 12px; font-weight: 500; flex-shrink: 0; }
+  .remove-semester-btn { background: none; border: none; color: #444; cursor: pointer; font-size: 15px; padding: 0 2px; flex-shrink: 0; }
+  .remove-semester-btn:hover { color: #e2504a; }
+  .semester-grades { padding: 4px 0 2px 8px; display: grid; gap: 4px; }
+  .semester-empty { font-size: 12px; color: #444; padding: 6px 12px; }
+  .new-semester-btn { background: #7c6ef7; border: none; border-radius: 12px; color: #fff; font-size: 13px; padding: 6px 14px; cursor: pointer; white-space: nowrap; }
+  .new-semester-btn:hover { background: #6a5de0; }
+  .summary-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1d1d1d;
+    border: none;
+    border-radius: 12px;
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+  .summary-entry { cursor: default; transition: opacity 0.15s; }
+  .summary-entry.dragging { opacity: 0.4; }
+  .summary-entry.drag-over { border-color: #7c6ef7; }
+  .drag-handle { color: #444; cursor: grab; font-size: 14px; padding: 0 2px; user-select: none; }
+  .drag-handle:hover { color: #888; }
+  .summary-entry-grade { font-weight: 600; min-width: 20px; }
+  .summary-entry-detail { flex: 1; color: #888; }
+  .summary-remove {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .summary-remove:hover { color: #e2504a; }
+  .summary-edit {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .summary-edit:hover { color: #7c6ef7; }
+  .entry-edit-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+  }
+  .entry-edit-form input[type=text] {
+    background: #202020;
+    border: 0.5px solid #7c6ef7;
+    border-radius: 16px;
+    color: #e8e8e8;
+    font-size: 13px;
+    padding: 3px 8px;
+    flex: 1;
+    min-width: 100px;
+  }
+  .entry-edit-form input[type=text]:focus { outline: none; }
+  .entry-edit-select {
+    background: #202020;
+    border: 0.5px solid #383838;
+    border-radius: 16px;
+    color: #e8e8e8;
+    font-size: 13px;
+    padding: 3px 8px;
+    cursor: pointer;
+  }
+  .entry-edit-select:focus { outline: none; border-color: #7c6ef7; }
+  .entry-save-btn {
+    background: #7c6ef7;
+    border: none;
+    border-radius: 16px;
+    color: #fff;
+    font-size: 12px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  .entry-save-btn:hover { background: #6a5de0; }
+  .entry-cancel-btn {
+    background: none;
+    border: 0.5px solid #383838;
+    border-radius: 16px;
+    color: #888;
+    font-size: 12px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  .entry-cancel-btn:hover { border-color: #888; color: #e8e8e8; }
+  .summary-avg-box {
+    background: #232323;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .summary-avg-grade { font-size: 52px; font-weight: 500; min-width: 60px; }
+  .summary-manual-add {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .summary-manual-add input {
+    background: #202020;
+    border: 0.5px solid #383838;
+    border-radius: 12px;
+    color: #e8e8e8;
+    font-size: 13px;
+    padding: 6px 10px;
+    flex: 1;
+    min-width: 120px;
+  }
+  .summary-manual-add input::placeholder { color: #555; }
+  .summary-manual-add input:focus { outline: none; border-color: #7c6ef7; }
+  .summary-manual-add select {
+    background: #202020;
+    border: 0.5px solid #383838;
+    border-radius: 12px;
+    color: #e8e8e8;
+    font-size: 13px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .summary-manual-add select:focus { outline: none; border-color: #7c6ef7; }
+  .summary-manual-btn {
+    background: #7c6ef7;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    padding: 6px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .summary-manual-btn:hover { background: #6a5de0; }
+
+  .course-input {
+    background: #202020;
+    border: 0.5px solid #383838;
+    border-radius: 12px;
+    color: #e8e8e8;
+    font-size: 14px;
+    padding: 6px 12px;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 1.75rem;
+    display: block;
+  }
+  .course-input::placeholder { color: #555; }
+  .course-input:focus { outline: none; border-color: #7c6ef7; }
 </style>
 </head>
 <body>
 <h1>Grade Calculator</h1>
 <p class="sub">Set weights and grades to see the final result</p>
+<input type="text" class="course-input" id="course-name" placeholder="Course name (optional)" maxlength="60" aria-label="Course name">
 
-<div class="weights-section">
-  <div class="weights-row">
-    <div class="weight-block">
-      <label class="weight-label" for="examPct">Exam (%)</label>
-      <div class="weight-input-row">
-        <input type="range" min="0" max="100" step="5" value="70" id="examPct" oninput="onExamPct()">
-        <input type="number" class="weight-num" min="0" max="100" value="60" id="examPct-num" aria-label="Exam weight percentage" oninput="onExamPctNum()"><span class="weight-pct">%</span>
-      </div>
-    </div>
-    <div class="weight-block">
-      <label class="weight-label" for="mapPct">Portfolio (%)</label>
-      <div class="weight-input-row">
-        <input type="range" min="0" max="100" step="5" value="40" id="mapPct" oninput="onMapPct()">
-        <input type="number" class="weight-num" min="0" max="100" value="40" id="mapPct-num" aria-label="Portfolio weight percentage" oninput="onMapPctNum()"><span class="weight-pct">%</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="sliders">
-  <div class="slider-row">
-    <label class="slider-label" for="exam">Written exam</label>
-    <input type="range" min="1" max="6" step="1" value="4" id="exam" oninput="onExamSlider()">
-    <input type="number" class="grade-num" min="1" max="6" value="4" id="exam-num" aria-label="Written exam grade" oninput="onExamNum()">
-    <span class="grade-letter" id="exam-letter">(C)</span>
-  </div>
-  <div class="slider-row">
-    <label class="slider-label" for="folder">Portfolio</label>
-    <input type="range" min="1" max="6" step="1" value="4" id="folder" oninput="onFolderSlider()">
-    <input type="number" class="grade-num" min="1" max="6" value="4" id="folder-num" aria-label="Portfolio grade" oninput="onFolderNum()">
-    <span class="grade-letter" id="folder-letter">(C)</span>
-  </div>
+<div class="components-section" id="components-section"></div>
+<div style="display:flex;align-items:center;margin-bottom:1.5rem">
+  <button class="add-comp-btn" onclick="addComponent()">+ Add component</button>
+  <div id="weight-total" style="display:flex;gap:4px"></div>
 </div>
 
 <div class="result-box">
@@ -154,6 +401,10 @@
   <div class="result-info">
     <div class="result-score" id="result-score">Weighted score: 4.0 · exam 60% · portfolio 40%</div>
     <div class="result-desc" id="result-desc">Good performance</div>
+  </div>
+  <div style="display:flex;align-items:center;align-self:flex-end;gap:6px">
+    <select id="add-target-semester" class="grade-select" style="padding:6px 10px;font-size:13px;font-weight:400" aria-label="Target semester"></select>
+    <button class="add-btn" onclick="addToSummary()">+ Add</button>
   </div>
 </div>
 
@@ -166,6 +417,35 @@
   </thead>
   <tbody id="table-body"></tbody>
 </table>
+<div class="summary-manual-add" style="margin-top:1.5rem">
+  <input type="text" id="manual-course-name" placeholder="Course name (optional)" maxlength="60" aria-label="Manual course name">
+  <select id="manual-grade" aria-label="Manual grade">
+    <option value="6">A (6)</option>
+    <option value="5">B (5)</option>
+    <option value="4" selected>C (4)</option>
+    <option value="3">D (3)</option>
+    <option value="2">E (2)</option>
+    <option value="1">F (1)</option>
+  </select>
+  <select id="manual-target-semester" aria-label="Target semester"></select>
+  <button class="summary-manual-btn" onclick="addManualGrade()">+ Add manually</button>
+</div>
+<h1 style="margin-top:2rem">Average Grade Calculator</h1>
+<div class="summary-section" id="summary-section">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div class="summary-title">Summary</div>
+    <button class="new-semester-btn" onclick="addSemester()">+ New semester</button>
+  </div>
+  <div class="summary-list" id="summary-list"></div>
+  <div class="summary-avg-box">
+    <div class="summary-avg-grade" id="summary-avg-grade"></div>
+    <div>
+      <div class="result-score" id="summary-avg-label"></div>
+      <div class="result-desc" id="summary-avg-count"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 const grades = [6,5,4,3,2,1];
@@ -173,72 +453,194 @@ const letters = {6:'A',5:'B',4:'C',3:'D',2:'E',1:'F'};
 const desc = {6:'Excellent performance',5:'Very good performance',4:'Good performance',3:'Satisfactory performance',2:'Sufficient performance',1:'Fail'};
 const gradeColors = {A:'g-col-A',B:'g-col-B',C:'g-col-C',D:'g-col-D',E:'g-col-E',F:'g-col-F'};
 
-let examW = 0.6, mapW = 0.4;
+let components = [
+  { name: 'Written exam', grade: 4, weight: 50, locked: false },
+  { name: 'Portfolio',    grade: 4, weight: 50, locked: false }
+];
 
-function setWeights(examVal) {
-  examVal = Math.min(100, Math.max(0, examVal));
-  const mapVal = 100 - examVal;
-  document.getElementById('examPct').value = examVal;
-  document.getElementById('examPct-num').value = examVal;
-  document.getElementById('mapPct').value = mapVal;
-  document.getElementById('mapPct-num').value = mapVal;
-  examW = examVal / 100;
-  mapW = mapVal / 100;
+function calcScore() {
+  const totalW = components.reduce((s, c) => s + c.weight, 0);
+  if (totalW === 0) return 1;
+  return components.reduce((s, c) => s + c.grade * c.weight, 0) / totalW;
+}
+
+function calcFinal() {
+  return Math.min(6, Math.max(1, Math.round(calcScore())));
+}
+
+function renderComponents() {
+  const section = document.getElementById('components-section');
+  section.innerHTML = components.map((c, i) =>
+    `<div class="component-row${c.locked ? ' locked-row' : ''}">
+      <input type="text" class="comp-name-input" value="${escapeHtml(c.name)}" maxlength="40" placeholder="Name" aria-label="Component name" oninput="components[${i}].name=this.value.slice(0,40);update()">
+      <input type="range" min="1" max="6" step="1" value="${c.grade}" id="comp-slider-${i}" oninput="onCompSlider(${i},this.value)" style="accent-color:#7c6ef7">
+      <select class="grade-select" id="comp-num-${i}" aria-label="${escapeHtml(c.name)} grade" onchange="onCompNum(${i},this.value)">
+        ${[6,5,4,3,2,1].map(v => `<option value="${v}"${c.grade===v?' selected':''}>${letters[v]} (${v})</option>`).join('')}
+      </select>
+      <input type="range" min="0" max="100" step="1" value="${c.weight}" id="comp-weight-slider-${i}" oninput="onCompWeight(${i},this.value)" style="accent-color:#7c6ef7">
+      <div class="weight-group">
+        <input type="number" class="weight-num" min="0" max="100" value="${c.weight}" id="comp-weight-${i}" aria-label="${escapeHtml(c.name)} weight" oninput="onCompWeight(${i},this.value)">
+        <span class="weight-pct-box">%</span>
+        <button class="lock-btn${c.locked ? ' active' : ''}" onclick="toggleLock(${i})" title="${c.locked ? 'Unlock weight' : 'Lock weight'}">${c.locked ? '🔒' : '🔓'}</button>
+        ${components.length > 1
+          ? `<button class="remove-comp-btn" onclick="removeComponent(${i})" title="Remove">&times;</button>`
+          : ''}
+      </div>
+    </div>`
+  ).join('');
+  section.querySelectorAll('.weight-num').forEach(el => {
+    el.addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g, '');
+      if (this.value.length > 3) this.value = this.value.slice(0, 3);
+    });
+  });
+}
+
+function onCompSlider(i, val) {
+  components[i].grade = Math.min(6, Math.max(1, parseInt(val)));
+  document.getElementById('comp-num-' + i).value = components[i].grade;
   update();
 }
 
-function onExamPct() { setWeights(parseInt(document.getElementById('examPct').value)); }
-function onMapPct()  { setWeights(100 - parseInt(document.getElementById('mapPct').value)); }
-function onExamPctNum() {
-  const v = parseInt(document.getElementById('examPct-num').value);
-  if (!isNaN(v)) setWeights(v);
-}
-function onMapPctNum() {
-  const v = parseInt(document.getElementById('mapPct-num').value);
-  if (!isNaN(v)) setWeights(100 - v);
+function onCompNum(i, val) {
+  const v = parseInt(val);
+  if (isNaN(v)) return;
+  components[i].grade = Math.min(6, Math.max(1, v));
+  document.getElementById('comp-slider-' + i).value = components[i].grade;
+  update();
 }
 
-function calc(e, m) { return Math.min(6, Math.max(1, Math.round(e * examW + m * mapW))); }
-
-function setGrade(id, val) {
-  val = Math.min(6, Math.max(1, val));
-  document.getElementById(id).value = val;
-  document.getElementById(id + '-num').value = val;
-  document.getElementById(id + '-letter').textContent = '(' + letters[val] + ')';
+function onCompWeight(i, val) {
+  components[i].weight = Math.min(100, Math.max(0, parseInt(val) || 0));
+  distributeRemaining(i);
+  // sync the input that triggered the change too (slider→num or num→slider)
+  const slider = document.getElementById('comp-weight-slider-' + i);
+  const num    = document.getElementById('comp-weight-' + i);
+  if (slider) slider.value = components[i].weight;
+  if (num)    num.value    = components[i].weight;
+  components.forEach((c, idx) => {
+    if (idx !== i) {
+      const s = document.getElementById('comp-weight-slider-' + idx);
+      const n = document.getElementById('comp-weight-' + idx);
+      if (s) s.value = c.weight;
+      if (n) n.value = c.weight;
+    }
+  });
+  updateWeightTotal();
+  update();
 }
 
-function onExamSlider() { setGrade('exam', parseInt(document.getElementById('exam').value)); update(); }
-function onFolderSlider() { setGrade('folder', parseInt(document.getElementById('folder').value)); update(); }
-function onExamNum() { const v = parseInt(document.getElementById('exam-num').value); if (!isNaN(v)) { setGrade('exam', v); update(); } }
-function onFolderNum() { const v = parseInt(document.getElementById('folder-num').value); if (!isNaN(v)) { setGrade('folder', v); update(); } }
+function toggleLock(i) {
+  components[i].locked = !components[i].locked;
+  renderComponents();
+}
+
+function distributeRemaining(changedIdx) {
+  const remaining = 100 - components[changedIdx].weight;
+  const others = components.map((c, idx) => ({ c, idx })).filter(({ idx, c }) => idx !== changedIdx && !c.locked);
+  if (others.length === 0) return;
+  const othersTotal = others.reduce((s, { c }) => s + c.weight, 0);
+  if (othersTotal === 0) {
+    const base = Math.floor(remaining / others.length);
+    const leftover = remaining - base * others.length;
+    others.forEach(({ c }, j) => { c.weight = base + (j === 0 ? leftover : 0); });
+  } else {
+    let assigned = 0;
+    others.forEach(({ c }, j) => {
+      if (j === others.length - 1) {
+        c.weight = Math.max(0, remaining - assigned);
+      } else {
+        c.weight = Math.round(c.weight / othersTotal * remaining);
+        assigned += c.weight;
+      }
+    });
+  }
+}
+
+function normalizeWeights() {
+  const total = components.reduce((s, c) => s + c.weight, 0);
+  if (total === 100 || components.length === 0) return;
+  if (total === 0) {
+    const base = Math.floor(100 / components.length);
+    const leftover = 100 - base * components.length;
+    components.forEach((c, j) => { c.weight = base + (j === 0 ? leftover : 0); });
+  } else {
+    let assigned = 0;
+    components.forEach((c, j) => {
+      if (j === components.length - 1) {
+        c.weight = Math.max(0, 100 - assigned);
+      } else {
+        c.weight = Math.round(c.weight / total * 100);
+        assigned += c.weight;
+      }
+    });
+  }
+}
+
+function updateWeightTotal() {
+  const total = components.reduce((s, c) => s + c.weight, 0);
+  const color = total === 100 ? '#7ed96a' : '#e2813a';
+  const el = document.getElementById('weight-total');
+  if (!el) return;
+  // offset right to align with the % box above: row padding(10) + lock-btn(~23) + gap(6) + [remove-btn(~22) + gap(6) if multiple]
+  const mr = 20 + 6 + (components.length > 1 ? 22 + 6 : 0);
+  el.style.marginLeft = 'auto';
+  el.style.marginRight = mr + 'px';
+  el.innerHTML = `<span class="weight-pct-box" style="color:${color};border-color:${color}">${total}</span><span class="weight-pct-box" style="color:${color}">%</span>`;
+}
+
+function addComponent() {
+  const share = Math.floor(100 / (components.length + 1));
+  components.push({ name: 'Component ' + (components.length + 1), grade: 4, weight: share, locked: false });
+  distributeRemaining(components.length - 1);
+  renderComponents();
+  update();
+}
+
+function removeComponent(i) {
+  components.splice(i, 1);
+  normalizeWeights();
+  renderComponents();
+  update();
+}
 
 function update() {
-  const e = parseInt(document.getElementById('exam').value);
-  const m = parseInt(document.getElementById('folder').value);
-  document.getElementById('exam-letter').textContent = '(' + letters[e] + ')';
-  document.getElementById('folder-letter').textContent = '(' + letters[m] + ')';
-  const score = (e * examW + m * mapW).toFixed(2);
-  const final = calc(e, m);
+  const score = calcScore();
+  const final = calcFinal();
   const gl = letters[final];
   const gradeEl = document.getElementById('result-grade');
   gradeEl.textContent = gl;
   gradeEl.className = 'result-grade ' + gradeColors[gl];
   document.getElementById('result-score').textContent =
-    'Weighted score: ' + score + ' · exam ' + Math.round(examW*100) + '% · portfolio ' + Math.round(mapW*100) + '%';
+    'Weighted score: ' + score.toFixed(2) + ' · ' + components.map(c => escapeHtml(c.name) + ' ' + c.weight + '%').join(' · ');
   document.getElementById('result-desc').textContent = desc[final];
-  buildTable(e, m);
+  const tableEl = document.querySelector('table');
+  if (components.length === 2) {
+    tableEl.style.display = '';
+    buildTable();
+  } else {
+    tableEl.style.display = 'none';
+  }
+  updateWeightTotal();
 }
 
-function buildTable(selE, selM) {
+function buildTable() {
+  const [c0, c1] = components;
+  const headerRow = document.querySelector('table thead tr');
+  headerRow.innerHTML = '<th>' + escapeHtml(c1.name) + ' ↓ / ' + escapeHtml(c0.name) + ' →</th>' +
+    grades.map(g => '<th>' + letters[g] + ' (' + g + ')</th>').join('');
+  const totalW = c0.weight + c1.weight;
+  const w0 = totalW > 0 ? c0.weight / totalW : 0.5;
+  const w1 = totalW > 0 ? c1.weight / totalW : 0.5;
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = '';
-  grades.forEach(m => {
+  grades.forEach(g1 => {
     const tr = document.createElement('tr');
-    let html = '<td>Portfolio ' + letters[m] + ' (' + m + ')</td>';
-    grades.forEach(e => {
-      const g = calc(e, m);
-      const gl = letters[g];
-      const active = e === selE && m === selM;
+    let html = '<td>' + escapeHtml(c1.name) + ' ' + letters[g1] + ' (' + g1 + ')</td>';
+    grades.forEach(g0 => {
+      const result = Math.min(6, Math.max(1, Math.round(g0 * w0 + g1 * w1)));
+      const gl = letters[result];
+      const active = g0 === c0.grade && g1 === c1.grade;
       html += '<td><span class="badge b-' + gl + (active ? ' active-cell' : '') + '">' + gl + '</span></td>';
     });
     tr.innerHTML = html;
@@ -246,7 +648,210 @@ function buildTable(selE, selM) {
   });
 }
 
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+const semesters = [{ name: 'Semester 1', grades: [], collapsed: false }];
+let activeSemester = 0;
+
+function renderSemesterPickers() {
+  const opts = semesters.map((s, i) => `<option value="${i}"${i === activeSemester ? ' selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
+  ['add-target-semester', 'manual-target-semester'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = opts;
+  });
+}
+
+function addSemester() {
+  semesters.push({ name: 'Semester ' + (semesters.length + 1), grades: [], collapsed: false });
+  activeSemester = semesters.length - 1;
+  renderSummary();
+}
+
+function removeSemester(si) {
+  if (semesters.length === 1) return;
+  semesters.splice(si, 1);
+  activeSemester = Math.min(activeSemester, semesters.length - 1);
+  renderSummary();
+}
+
+function toggleSemester(si) {
+  semesters[si].collapsed = !semesters[si].collapsed;
+  renderSummary();
+}
+
+function setActiveSemester(si) {
+  activeSemester = si;
+  renderSummary();
+}
+
+function editSemesterName(si) {
+  semesters[si].editing = true;
+  renderSummary();
+  const input = document.getElementById('sem-name-input-' + si);
+  if (input) { input.focus(); input.select(); }
+}
+
+function semNameKey(e, si) {
+  if (e.key === 'Enter') e.target.blur();
+  if (e.key === 'Escape') { semesters[si].editing = false; renderSummary(); }
+}
+
+function saveSemesterName(si) {
+  const input = document.getElementById('sem-name-input-' + si);
+  semesters[si].name = (input ? input.value.trim().slice(0, 40) : '') || ('Semester ' + (si + 1));
+  semesters[si].editing = false;
+  renderSummary();
+}
+
+function addToSummary() {
+  const si = parseInt(document.getElementById('add-target-semester').value);
+  const score = parseFloat(calcScore().toFixed(2));
+  const final = calcFinal();
+  const rawName = document.getElementById('course-name').value.trim().slice(0, 60);
+  semesters[si].grades.push({
+    letter: letters[final], value: final, score,
+    weightInfo: components.map(c => escapeHtml(c.name) + ' ' + c.weight + '%').join(' / '),
+    name: rawName
+  });
+  activeSemester = si;
+  renderSummary();
+}
+
+function addManualGrade() {
+  const si = parseInt(document.getElementById('manual-target-semester').value);
+  const rawName = document.getElementById('manual-course-name').value.trim().slice(0, 60);
+  const value = parseInt(document.getElementById('manual-grade').value);
+  semesters[si].grades.push({ letter: letters[value], value, score: value, name: rawName, manual: true });
+  activeSemester = si;
+  document.getElementById('manual-course-name').value = '';
+  renderSummary();
+}
+
+function removeFromSummary(si, gi) {
+  semesters[si].grades.splice(gi, 1);
+  renderSummary();
+}
+
+function editSummaryEntry(si, gi) {
+  const entry = document.getElementById('entry-' + si + '-' + gi);
+  const g = semesters[si].grades[gi];
+  const gradeOptions = [6,5,4,3,2,1].map(v =>
+    `<option value="${v}"${g.value === v ? ' selected' : ''}>${letters[v]} (${v})</option>`
+  ).join('');
+  entry.innerHTML = `
+    <div class="entry-edit-form">
+      <input type="text" id="edit-name-${si}-${gi}" value="${escapeHtml(g.name || '')}" placeholder="Course name" maxlength="60" aria-label="Course name">
+      <select class="entry-edit-select" id="edit-grade-${si}-${gi}" aria-label="Grade">${gradeOptions}</select>
+      <button class="entry-save-btn" onclick="saveEntryEdit(${si},${gi})">Save</button>
+      <button class="entry-cancel-btn" onclick="renderSummary()">Cancel</button>
+    </div>`;
+  const form = entry.querySelector('.entry-edit-form');
+  form.addEventListener('keydown', e => { if (e.key === 'Enter') saveEntryEdit(si, gi); if (e.key === 'Escape') renderSummary(); });
+  document.getElementById('edit-name-' + si + '-' + gi).focus();
+}
+
+function saveEntryEdit(si, gi) {
+  const g = semesters[si].grades[gi];
+  g.name = document.getElementById('edit-name-' + si + '-' + gi).value.trim().slice(0, 60);
+  const newValue = parseInt(document.getElementById('edit-grade-' + si + '-' + gi).value);
+  g.value = newValue;
+  g.letter = letters[newValue];
+  g.score = newValue;
+  g.weightInfo = null;
+  renderSummary();
+}
+
+function renderSummary() {
+  const list = document.getElementById('summary-list');
+  list.innerHTML = semesters.map((sem, si) => {
+    const semAvg = sem.grades.length > 0 ? sem.grades.reduce((s, g) => s + g.value, 0) / sem.grades.length : null;
+    const semFinal = semAvg !== null ? Math.min(6, Math.max(1, Math.round(semAvg))) : null;
+    const nameHtml = sem.editing
+      ? `<input class="semester-name-input" id="sem-name-input-${si}" value="${escapeHtml(sem.name)}" maxlength="40" onblur="saveSemesterName(${si})" onkeydown="semNameKey(event,${si})">`
+      : `<span class="semester-name">${escapeHtml(sem.name)}</span>`;
+    const gradesHtml = sem.grades.map((g, gi) =>
+      `<div class="summary-entry" id="entry-${si}-${gi}" draggable="true">
+        <span class="drag-handle">⠿</span>
+        <span class="summary-entry-grade ${gradeColors[g.letter]}">${g.letter}</span>
+        <span class="summary-entry-detail">${g.name ? '<strong>' + escapeHtml(g.name) + '</strong> &middot; ' : ''}${'Score ' + g.letter + ' (' + g.score + ')' + (g.manual || !g.weightInfo ? '' : ' &middot; ' + g.weightInfo)}</span>
+        <button class="summary-edit" onclick="editSummaryEntry(${si},${gi})" title="Edit">✎</button>
+        <button class="summary-remove" onclick="removeFromSummary(${si},${gi})" title="Remove">&times;</button>
+      </div>`
+    ).join('');
+    return `<div class="semester-section${si === activeSemester ? ' active-semester' : ''}">
+      <div class="semester-header" data-si="${si}" onclick="setActiveSemester(${si})">
+        <button class="semester-toggle" onclick="event.stopPropagation();toggleSemester(${si})">${sem.collapsed ? '▸' : '▾'}</button>
+        ${nameHtml}
+        ${semAvg !== null ? `<span class="semester-avg-badge"><span style="color:#666">— Average Grade: </span><span class="${gradeColors[letters[semFinal]]}">${letters[semFinal]} (${semAvg.toFixed(1)})</span></span>` : ''}
+        <button class="summary-edit" style="margin-left:auto" onclick="event.stopPropagation();editSemesterName(${si})" title="Rename">✎</button>
+        ${semesters.length > 1 ? `<button class="remove-semester-btn" onclick="event.stopPropagation();removeSemester(${si})">&times;</button>` : ''}
+      </div>
+      ${!sem.collapsed ? `<div class="semester-grades">${sem.grades.length === 0 ? '<div class="semester-empty">No grades yet — click to make active</div>' : gradesHtml}</div>` : ''}
+    </div>`;
+  }).join('');
+  renderSemesterPickers();
+  initDrag();
+  const allGrades = semesters.flatMap(s => s.grades);
+  if (allGrades.length === 0) {
+    document.getElementById('summary-avg-grade').textContent = '';
+    document.getElementById('summary-avg-label').textContent = '';
+    document.getElementById('summary-avg-count').textContent = '';
+    return;
+  }
+  const avg = allGrades.reduce((s, g) => s + g.value, 0) / allGrades.length;
+  const avgFinal = Math.min(6, Math.max(1, Math.round(avg)));
+  const avgLetter = letters[avgFinal];
+  const avgGradeEl = document.getElementById('summary-avg-grade');
+  avgGradeEl.textContent = avgLetter;
+  avgGradeEl.className = 'summary-avg-grade ' + gradeColors[avgLetter];
+  document.getElementById('summary-avg-label').textContent = 'Average: ' + avg.toFixed(2) + ' · ' + allGrades.length + ' grade' + (allGrades.length !== 1 ? 's' : '') + ' · ' + semesters.length + ' semester' + (semesters.length !== 1 ? 's' : '');
+  document.getElementById('summary-avg-count').textContent = desc[avgFinal];
+}
+
+function initDrag() {
+  let dragSi = null, dragGi = null;
+  const clearOver = () => document.querySelectorAll('.summary-entry, .semester-header').forEach(e => e.classList.remove('drag-over'));
+
+  document.querySelectorAll('.summary-entry[draggable]').forEach(el => {
+    const parts = el.id.split('-');
+    const si = parseInt(parts[1]);
+    const gi = parseInt(parts[2]);
+    el.addEventListener('dragstart', () => { dragSi = si; dragGi = gi; el.classList.add('dragging'); });
+    el.addEventListener('dragend', () => { el.classList.remove('dragging'); clearOver(); });
+    el.addEventListener('dragover', e => { e.preventDefault(); clearOver(); el.classList.add('drag-over'); });
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSi === null || (dragSi === si && dragGi === gi)) return;
+      const moved = semesters[dragSi].grades.splice(dragGi, 1)[0];
+      const insertAt = (dragSi === si && dragGi < gi) ? gi - 1 : gi;
+      semesters[si].grades.splice(insertAt, 0, moved);
+      renderSummary();
+    });
+  });
+
+  document.querySelectorAll('.semester-header[data-si]').forEach(el => {
+    const si = parseInt(el.dataset.si);
+    el.addEventListener('dragover', e => {
+      if (dragSi === null) return;
+      e.preventDefault();
+      clearOver();
+      el.classList.add('drag-over');
+    });
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSi === null) return;
+      const moved = semesters[dragSi].grades.splice(dragGi, 1)[0];
+      semesters[si].grades.push(moved);
+      renderSummary();
+    });
+  });
+}
+
+renderComponents();
 update();
+renderSummary();
 </script>
 </body>
 </html>
